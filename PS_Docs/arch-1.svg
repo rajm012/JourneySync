@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">JourneySync application architecture</title>
+  <desc id="desc">Customer data and cross-channel events enter an ingestion API, pass through a Redis event stream and identity resolution worker, then reach Postgres, MongoDB, live updates, alerts and the dashboard.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f7f9fc}.panel{fill:#fff;stroke:#cbd5e1;stroke-width:2}.blue{fill:#eaf3ff;stroke:#2563eb}.purple{fill:#f3edff;stroke:#7c3aed}.green{fill:#eafaf1;stroke:#16a34a}.amber{fill:#fff7e6;stroke:#d97706}.red{fill:#fff0f0;stroke:#dc2626}.ink{fill:#152238}.muted{fill:#526277}.title{font:700 34px Arial,sans-serif}.sub{font:400 17px Arial,sans-serif}.h{font:700 20px Arial,sans-serif}.body{font:400 15px Arial,sans-serif}.small{font:400 13px Arial,sans-serif}.arrow{stroke:#64748b;stroke-width:3;fill:none;marker-end:url(#arrow)}.dash{stroke-dasharray:8 7}.label{fill:#fff;stroke:#d5dde8;stroke-width:1}.step{fill:#2563eb}.steptext{fill:#fff;font:700 14px Arial,sans-serif}.lane{fill:none;stroke:#dbe3ee;stroke-width:2;stroke-dasharray:6 8}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0l10 5-10 5z" fill="#64748b"/></marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-opacity=".10"/></filter>
+  </defs>
+  <rect class="bg" width="1600" height="900"/>
+  <text x="70" y="64" class="title ink">JourneySync — Application Architecture</text>
+  <text x="70" y="94" class="sub muted">From scattered channel activity to one trusted, live customer journey</text>
+
+  <path class="lane" d="M320 135v675M600 135v675M900 135v675M1240 135v675"/>
+  <text x="95" y="145" class="h muted">INPUTS</text><text x="365" y="145" class="h muted">INGESTION</text><text x="650" y="145" class="h muted">DECISION ENGINE</text><text x="955" y="145" class="h muted">DATA &amp; INSIGHTS</text><text x="1300" y="145" class="h muted">EXPERIENCE</text>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="185" width="220" height="142" rx="14" class="panel blue"/>
+    <text x="95" y="220" class="h ink">Known customers</text>
+    <text x="95" y="250" class="body muted">Name, email, phone,</text><text x="95" y="272" class="body muted">loyalty ID, devices, location</text>
+    <text x="95" y="305" class="small muted">Seeded customer catalogue</text>
+
+    <rect x="70" y="380" width="220" height="210" rx="14" class="panel purple"/>
+    <text x="95" y="415" class="h ink">Channel events</text>
+    <text x="95" y="448" class="body muted">Website</text><text x="95" y="474" class="body muted">Mobile app</text><text x="95" y="500" class="body muted">Call centre</text><text x="95" y="526" class="body muted">Branch</text>
+    <text x="95" y="563" class="small muted">Live, playback or burst demo</text>
+
+    <rect x="350" y="285" width="220" height="150" rx="14" class="panel blue"/>
+    <text x="375" y="322" class="h ink">Event API</text>
+    <text x="375" y="352" class="body muted">Validates each event</text><text x="375" y="376" class="body muted">and blocks duplicate IDs</text>
+    <text x="375" y="410" class="small muted">Fast acceptance; no heavy work</text>
+
+    <rect x="350" y="500" width="220" height="142" rx="14" class="panel amber"/>
+    <text x="375" y="537" class="h ink">Redis event stream</text>
+    <text x="375" y="567" class="body muted">Reliable waiting line</text><text x="375" y="591" class="body muted">for incoming activity</text>
+    <text x="375" y="620" class="small muted">Retry + dead-letter handling</text>
+
+    <rect x="630" y="245" width="240" height="350" rx="14" class="panel purple"/>
+    <text x="655" y="282" class="h ink">Identity resolver</text>
+    <text x="655" y="316" class="body ink">1. Strong identifiers</text><text x="675" y="340" class="small muted">Email, phone, loyalty ID</text>
+    <text x="655" y="377" class="body ink">2. Behavioural evidence</text><text x="675" y="401" class="small muted">Device, network, time, location</text>
+    <text x="655" y="438" class="body ink">3. Decision</text><text x="675" y="462" class="small muted">Matched · uncertain · unresolved</text><text x="675" y="484" class="small muted">or conflict refused</text>
+    <rect x="655" y="515" width="190" height="50" rx="8" class="red"/>
+    <text x="674" y="538" class="small ink">Safety guard: never merge</text><text x="674" y="556" class="small ink">contradictory identities silently</text>
+
+    <rect x="945" y="185" width="255" height="164" rx="14" class="panel blue"/>
+    <text x="970" y="222" class="h ink">PostgreSQL</text>
+    <text x="970" y="252" class="body muted">Customer identity graph</text><text x="970" y="276" class="body muted">Match audit and confidence</text><text x="970" y="300" class="body muted">Alerts and latency metrics</text>
+    <text x="970" y="329" class="small muted">Trusted structured records</text>
+
+    <rect x="945" y="390" width="255" height="150" rx="14" class="panel green"/>
+    <text x="970" y="427" class="h ink">MongoDB</text>
+    <text x="970" y="457" class="body muted">One chronological journey</text><text x="970" y="481" class="body muted">per customer across channels</text>
+    <text x="970" y="518" class="small muted">Fast timeline and funnel views</text>
+
+    <rect x="945" y="580" width="255" height="150" rx="14" class="panel amber"/>
+    <text x="970" y="617" class="h ink">Rules &amp; live updates</text>
+    <text x="970" y="647" class="body muted">Risk and churn alerts</text><text x="970" y="671" class="body muted">Resolved-event broadcast</text>
+    <text x="970" y="708" class="small muted">Immediate action, not batch reports</text>
+
+    <rect x="1280" y="270" width="250" height="360" rx="14" class="panel blue"/>
+    <text x="1305" y="307" class="h ink">JourneySync dashboard</text>
+    <text x="1305" y="343" class="body ink">Unified customer journey</text>
+    <text x="1305" y="375" class="body ink">Identity evidence graph</text>
+    <text x="1305" y="407" class="body ink">Refused conflict links</text>
+    <text x="1305" y="439" class="body ink">Live event ticker</text>
+    <text x="1305" y="471" class="body ink">Review queue</text>
+    <text x="1305" y="503" class="body ink">Alerts and next actions</text>
+    <text x="1305" y="535" class="body ink">Funnel and repeat contacts</text>
+    <rect x="1305" y="570" width="200" height="36" rx="18" class="green"/>
+    <text x="1330" y="593" class="small ink">One clear customer story</text>
+  </g>
+
+  <path class="arrow" d="M290 256H630"/><path class="arrow" d="M290 485H350"/><path class="arrow" d="M460 435v65"/><path class="arrow" d="M570 571h60"/>
+  <path class="arrow" d="M870 330h75"/><path class="arrow" d="M870 465h75"/><path class="arrow" d="M870 535c35 0 35 120 75 120"/>
+  <path class="arrow" d="M1200 267h80"/><path class="arrow" d="M1200 465h80"/><path class="arrow" d="M1200 655c42 0 38-105 80-105"/>
+  <path class="arrow dash" d="M1405 630v120H750v-155"/>
+
+  <g><circle cx="330" cy="485" r="14" class="step"/><text x="326" y="490" class="steptext">1</text><circle cx="600" cy="571" r="14" class="step"/><text x="596" y="576" class="steptext">2</text><circle cx="905" cy="465" r="14" class="step"/><text x="901" y="470" class="steptext">3</text><circle cx="1240" cy="465" r="14" class="step"/><text x="1236" y="470" class="steptext">4</text></g>
+
+  <rect x="70" y="790" width="1460" height="65" rx="12" class="label"/>
+  <text x="95" y="818" class="body ink">Why this architecture?</text>
+  <text x="95" y="842" class="small muted">Fast ingestion · safe and explainable matching · independent scaling · complete audit trail · live dashboard updates · no silent identity merges</text>
+</svg>

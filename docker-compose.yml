@@ -1,0 +1,117 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: journeysync
+      POSTGRES_PASSWORD: journeysync
+      POSTGRES_DB: journeysync
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U journeysync"]
+      interval: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6381:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+  backend:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://journeysync:journeysync@postgres:5432/journeysync
+      MONGO_URL: mongodb://mongo:27017
+      MONGO_DB: journeysync
+      REDIS_URL: redis://redis:6379
+      GROUND_TRUTH: /app/data/ground_truth.json
+      CUSTOMERS_PATH: /app/data/customers.json
+      DATA_DIR: /app/data
+      API: http://127.0.0.1:8000
+      PYTHONPATH: /app
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 15s
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    volumes:
+      - ./backend:/app
+      - ./simulators:/app/simulators:ro
+      - ./data:/app/data:ro
+
+  worker:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://journeysync:journeysync@postgres:5432/journeysync
+      MONGO_URL: mongodb://mongo:27017
+      MONGO_DB: journeysync
+      REDIS_URL: redis://redis:6379
+      GROUND_TRUTH: /app/data/ground_truth.json
+      CUSTOMERS_PATH: /app/data/customers.json
+      DATA_DIR: /app/data
+      PYTHONPATH: /app
+    command: ["python", "-m", "app.workers.resolver_worker"]
+    volumes:
+      - ./backend:/app
+      - ./simulators:/app/simulators:ro
+      - ./data:/app/data:ro
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      API_INTERNAL_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    command: sh -c "npm install && npm run dev -- -H 0.0.0.0 -p 3000"
+
+volumes:
+  pgdata:
+  mongodata:
+  redisdata:
+  frontend_node_modules:

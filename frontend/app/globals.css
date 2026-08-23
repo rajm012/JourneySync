@@ -1,0 +1,576 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   JourneySync — "Statement"
+   --------------------------------------------------------------------------
+   A ledger for customer journeys. Hairline rules instead of boxes, tabular
+   figures that line up, generous margins. Two colour rules carry meaning:
+
+     cool ramp (navy → cyan)  = the four channels, in flow
+     warm family (red/amber)  = something needs a human
+
+   Nothing else is coloured. If it has a hue, it means something.
+   ========================================================================== */
+
+:root,
+html.light {
+  /* surfaces */
+  --paper: #fafaf8;
+  --paper-raised: #ffffff;
+  --paper-sunk: #f1f1ed;
+  --paper-band: #00175a;
+
+  /* ink */
+  --ink: #0b1b2b;
+  --ink-2: #46586b;
+  --ink-3: #7c8ca0;
+  --ink-band: #eef3fa;
+  --ink-band-2: #9db4d2;
+
+  /* rules — warm neutral, never blue-grey */
+  --rule: #e2e3dd;
+  --rule-strong: #c4c8be;
+
+  /* brand */
+  --blue: #006fcf;
+  --blue-deep: #00175a;
+  --blue-ink: #005099; /* passes AA on paper for link text */
+
+  /* attention — the only warm hues in the system */
+  --flag: #ae2015;
+  --flag-2: #855400;
+  --flag-wash: #fbece9;
+  --flag-2-wash: #faf2e2;
+  --ok: #0a6b4f;
+  --ok-wash: #e8f3ee;
+
+  /* channel ramp — fills for marks, never for text */
+  --ch-web: #00175a;
+  --ch-app: #006fcf;
+  --ch-call: #00a3e0;
+  --ch-branch: #6bc9e4;
+  --ch-email: #a3dced;
+  --ch-sms: #c9e8f2;
+  --ch-none: #c4c8be;
+
+  --graph-node-fill: #ffffff;
+}
+
+html.dark {
+  --paper: #08111a;
+  --paper-raised: #0d1a25;
+  --paper-sunk: #050d14;
+  --paper-band: #001028;
+
+  --ink: #e9eff3;
+  --ink-2: #9fb1bf;
+  --ink-3: #6d8190;
+  --ink-band: #eef3fa;
+  --ink-band-2: #9db4d2;
+
+  --rule: #1a2833;
+  --rule-strong: #2b3e4d;
+
+  --blue: #2f9cea;
+  --blue-deep: #001028;
+  --blue-ink: #6cbcf5;
+
+  --flag: #ff6f61;
+  --flag-2: #e0a44a;
+  --flag-wash: #2b1109;
+  --flag-2-wash: #291d08;
+  --ok: #52d3a4;
+  --ok-wash: #0c2a21;
+
+  --ch-web: #1c5da4;
+  --ch-app: #2f9cea;
+  --ch-call: #52c9f0;
+  --ch-branch: #8fdcf2;
+  --ch-email: #b6e7f6;
+  --ch-sms: #d3f0f9;
+  --ch-none: #2b3e4d;
+
+  --graph-node-fill: #0d1a25;
+}
+
+/* --------------------------------------------------------------------------
+   Type. Libre Franklin (Franklin Gothic lineage — the voice of American
+   finance and newsprint) for everything read; IBM Plex Mono for everything
+   counted. Fallbacks stay inside the same lineage so an offline venue
+   degrades to something still deliberate rather than to Arial-by-accident.
+   -------------------------------------------------------------------------- */
+:root {
+  --font-display: "Libre Franklin", "Franklin Gothic Medium", "Helvetica Neue",
+    "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-figure: "IBM Plex Mono", ui-monospace, "SF Mono", "Cascadia Mono",
+    Menlo, Consolas, monospace;
+
+  /* One lever scales the entire interface. Presentation mode moves it. */
+  font-size: 16px;
+}
+
+/* Presentation mode — everything is sized in rem, so this single rule makes
+   the whole app legible from the back of a boardroom. */
+html.present {
+  font-size: 18.5px;
+}
+
+html,
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+}
+html.dark,
+html.dark body {
+  color-scheme: dark;
+}
+
+/* Every figure in the product lines up in a column. */
+.figure {
+  font-family: var(--font-figure);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.01em;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.021em;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Scale. Nothing below 0.8125rem (13px) exists in this product — it has to
+   survive a projector.
+   -------------------------------------------------------------------------- */
+.t-display {
+  font-size: clamp(2rem, 4.4vw, 2.875rem);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.032em;
+}
+.t-h1 {
+  font-size: clamp(1.5rem, 2.5vw, 1.875rem);
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.024em;
+}
+.t-h2 {
+  font-size: 1.1875rem;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+}
+.t-body {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+.t-label {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+/* Eyebrow — the ledger's column heading. Used for section and field labels. */
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.eyebrow-band {
+  color: var(--ink-band-2);
+}
+
+/* --------------------------------------------------------------------------
+   Layout
+   -------------------------------------------------------------------------- */
+.shell {
+  width: 100%;
+  max-width: 84rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+/* The verdict band — full bleed, deep navy, the exec answer before any chart */
+.band {
+  background: var(--paper-band);
+  color: var(--ink-band);
+  border-bottom: 1px solid var(--blue);
+}
+
+/* A ruled section. Replaces the old uniform card: a hairline above, air
+   below, no border on three sides. Boxes are reserved for exceptions. */
+.panel {
+  border-top: 1px solid var(--rule-strong);
+  padding-top: 1rem;
+}
+.panel-sub {
+  border-top: 1px solid var(--rule);
+  padding-top: 0.875rem;
+}
+
+/* Kept for genuine exceptions — an alert is a boxed thing because it
+   interrupts. Everything else is ruled, not boxed. */
+.card {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1rem 1.125rem;
+}
+.card-flag {
+  border-left: 3px solid var(--flag);
+}
+.card-flag-2 {
+  border-left: 3px solid var(--flag-2);
+}
+.card-quiet {
+  border-left: 3px solid var(--rule-strong);
+}
+
+.surface {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Ledger tables — right-aligned tabular figures, hairline rows, no zebra
+   -------------------------------------------------------------------------- */
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.ledger thead th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-align: left;
+  padding: 0 0.75rem 0.5rem 0;
+  border-bottom: 1px solid var(--rule-strong);
+  white-space: nowrap;
+}
+.ledger tbody td {
+  padding: 0.6875rem 0.75rem 0.6875rem 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+.ledger tbody tr:hover {
+  background: var(--paper-sunk);
+}
+.ledger .num {
+  text-align: right;
+  font-family: var(--font-figure);
+  font-variant-numeric: tabular-nums;
+  padding-right: 1.25rem;
+}
+.ledger thead th.num {
+  text-align: right;
+  padding-right: 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   Controls
+   -------------------------------------------------------------------------- */
+.btn {
+  background: var(--blue);
+  color: #fff;
+  padding: 0.5rem 0.9375rem;
+  border-radius: 3px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  border: 1px solid var(--blue);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.btn:hover {
+  background: var(--blue-deep);
+  border-color: var(--blue-deep);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+  padding: 0.4375rem 0.875rem;
+  border-radius: 3px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.btn-ghost:hover {
+  background: var(--paper-sunk);
+  border-color: var(--ink-3);
+}
+.btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-band {
+  background: transparent;
+  color: var(--ink-band);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 0.4375rem 0.875rem;
+  border-radius: 3px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-band:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+.btn-band:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.field {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+.field::placeholder {
+  color: var(--ink-3);
+}
+
+/* Segmented time-window control — one strip, hairline divided */
+.segment {
+  display: inline-flex;
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.segment > * {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  border-left: 1px solid var(--rule);
+}
+.segment > *:first-child {
+  border-left: none;
+}
+.segment > *:hover {
+  background: var(--paper-sunk);
+}
+.segment > [data-on="true"] {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.segment > [data-on="true"]:hover {
+  background: var(--blue);
+}
+
+/* --------------------------------------------------------------------------
+   Badges — flat, squared, no pills. A pill reads consumer; this is a ledger.
+   -------------------------------------------------------------------------- */
+.badge {
+  display: inline-block;
+  padding: 0.125rem 0.4375rem;
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.badge-critical {
+  background: var(--flag);
+  color: #fff;
+}
+.badge-high {
+  background: var(--flag-wash);
+  color: var(--flag);
+  box-shadow: inset 0 0 0 1px var(--flag);
+}
+.badge-medium {
+  background: var(--flag-2-wash);
+  color: var(--flag-2);
+  box-shadow: inset 0 0 0 1px var(--flag-2);
+}
+.badge-low,
+.badge-matched {
+  background: var(--ok-wash);
+  color: var(--ok);
+}
+.badge-uncertain {
+  background: var(--flag-2-wash);
+  color: var(--flag-2);
+}
+.badge-unresolved {
+  background: var(--paper-sunk);
+  color: var(--ink-3);
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
+}
+.badge-conflict {
+  background: var(--flag);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Utilities kept from the old sheet so nothing dangles
+   -------------------------------------------------------------------------- */
+.text-muted {
+  color: var(--ink-3);
+}
+.text-soft {
+  color: var(--ink-2);
+}
+.text-link {
+  color: var(--blue-ink);
+  font-weight: 600;
+}
+.text-link:hover {
+  text-decoration: underline;
+}
+.bg-chip {
+  background: var(--paper-sunk);
+}
+.border-line {
+  border-color: var(--rule);
+}
+.hover-surface:hover {
+  background: var(--paper-sunk);
+}
+.chip {
+  display: inline-block;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 2px;
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+/* --------------------------------------------------------------------------
+   The signature: journey spine. Lanes draw, marks land, stitches connect,
+   the refused link arrives last and stays refused.
+   -------------------------------------------------------------------------- */
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes land {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  70% {
+    transform: scale(1.25);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.spine-lane {
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  animation: draw 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.spine-mark {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: land 320ms cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+.spine-arc {
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  animation: draw 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.spine-note {
+  opacity: 0;
+  animation: rise 420ms ease-out forwards;
+}
+
+.band-in > * {
+  opacity: 0;
+  animation: rise 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* --------------------------------------------------------------------------
+   Quality floor
+   -------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.band :focus-visible {
+  outline-color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .spine-lane,
+  .spine-arc {
+    stroke-dashoffset: 0;
+  }
+  .spine-mark,
+  .spine-note,
+  .band-in > * {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Scrollbars inside the ledger and the ticker, quieted down */
+.scroll-quiet {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+}
+.scroll-quiet::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-quiet::-webkit-scrollbar-thumb {
+  background: var(--rule-strong);
+  border-radius: 4px;
+}
+.scroll-quiet::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

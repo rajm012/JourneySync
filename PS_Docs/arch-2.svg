@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">JourneySync technical architecture</title>
+  <desc id="desc">Technical container and data-flow architecture for JourneySync, including Next.js, FastAPI, Redis Streams, resolver worker, PostgreSQL, MongoDB, pub-sub and SSE.</desc>
+  <defs>
+    <style>
+      .bg{fill:#07111f}.zone{fill:#0c1a2b;stroke:#25364b;stroke-width:1.5}.box{fill:#122338;stroke:#3b526d;stroke-width:1.5}.api{fill:#102c48;stroke:#38bdf8}.worker{fill:#251d49;stroke:#a78bfa}.redis{fill:#3a1b27;stroke:#fb7185}.pg{fill:#102e35;stroke:#2dd4bf}.mongo{fill:#183221;stroke:#4ade80}.ui{fill:#2e2713;stroke:#fbbf24}.data{fill:#26233b;stroke:#818cf8}.ink{fill:#e8f0fa}.muted{fill:#9db0c5}.cyan{fill:#67e8f9}.yellow{fill:#fde68a}.green{fill:#86efac}.redtext{fill:#fda4af}.title{font:700 32px Arial,sans-serif}.zoneh{font:700 14px Arial,sans-serif;letter-spacing:1.6px}.h{font:700 18px Arial,sans-serif}.body{font:400 13px Arial,sans-serif}.mono{font:400 12px 'Courier New',monospace}.small{font:400 11px Arial,sans-serif}.arrow{stroke:#7f96ad;stroke-width:2.3;fill:none;marker-end:url(#arrow)}.event{stroke:#fb7185}.query{stroke:#2dd4bf}.live{stroke:#fbbf24;stroke-dasharray:7 5}.seed{stroke:#818cf8;stroke-dasharray:7 5}.label{fill:#07111f;stroke:#354a62}.num{fill:#38bdf8}.numt{fill:#07111f;font:700 12px Arial,sans-serif}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0l10 5-10 5z" fill="#7f96ad"/></marker>
+    <filter id="shadow"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity=".35"/></filter>
+  </defs>
+  <rect class="bg" width="1600" height="900"/>
+  <text x="55" y="54" class="title ink">JourneySync — Technical Architecture</text>
+  <text x="55" y="80" class="body muted">Event-driven identity resolution · auditable decisions · polyglot persistence · real-time dashboard</text>
+
+  <rect x="45" y="110" width="260" height="700" rx="14" class="zone"/><text x="65" y="140" class="zoneh muted">CLIENTS &amp; EVENT SOURCES</text>
+  <rect x="325" y="110" width="355" height="700" rx="14" class="zone"/><text x="345" y="140" class="zoneh muted">APPLICATION SERVICES</text>
+  <rect x="700" y="110" width="485" height="700" rx="14" class="zone"/><text x="720" y="140" class="zoneh muted">EVENT BUS &amp; DATA PLANE</text>
+  <rect x="1205" y="110" width="350" height="700" rx="14" class="zone"/><text x="1225" y="140" class="zoneh muted">READ MODELS &amp; UI</text>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="175" width="210" height="150" rx="10" class="data"/>
+    <text x="90" y="205" class="h ink">Static seed data</text>
+    <text x="90" y="232" class="mono cyan">customers.json</text><text x="90" y="253" class="mono cyan">events.json</text><text x="90" y="274" class="mono cyan">ground_truth.json</text>
+    <text x="90" y="302" class="small muted">1,000-customer synthetic catalog</text>
+
+    <rect x="70" y="365" width="210" height="205" rx="10" class="data"/>
+    <text x="90" y="395" class="h ink">Event producers</text>
+    <text x="90" y="425" class="body ink">Web simulator</text><text x="90" y="448" class="body ink">App simulator</text><text x="90" y="471" class="body ink">Call-center simulator</text><text x="90" y="494" class="body ink">Demo playback / burst</text>
+    <text x="90" y="527" class="mono muted">ChannelEvent JSON</text><text x="90" y="548" class="small muted">HTTP POST, single or bulk</text>
+
+    <rect x="70" y="620" width="210" height="115" rx="10" class="ui"/>
+    <text x="90" y="650" class="h ink">Browser</text>
+    <text x="90" y="678" class="mono yellow">localhost:3000</text>
+    <text x="90" y="704" class="small muted">SSR API reads + EventSource</text>
+
+    <rect x="350" y="175" width="305" height="190" rx="10" class="api"/>
+    <text x="370" y="205" class="h ink">FastAPI backend container</text>
+    <text x="370" y="230" class="mono cyan">backend:8000 → host:8000</text>
+    <text x="370" y="260" class="mono ink">POST /api/events</text><text x="370" y="281" class="mono ink">POST /api/events/bulk</text><text x="370" y="302" class="mono ink">GET  /api/customers/*</text><text x="370" y="323" class="mono ink">GET  /api/analytics/*</text><text x="370" y="344" class="mono ink">GET  /api/stream (SSE)</text>
+
+    <rect x="350" y="410" width="305" height="260" rx="10" class="worker"/>
+    <text x="370" y="440" class="h ink">Resolver worker container</text>
+    <text x="370" y="465" class="mono cyan">consumer: resolver-1</text>
+    <text x="370" y="496" class="body ink">① Deterministic lookup</text><text x="390" y="516" class="small muted">user ID · email · phone · loyalty card</text>
+    <text x="370" y="545" class="body ink">② Probabilistic scoring</text><text x="390" y="565" class="small muted">device .45 · IP .20 · time .20 · geo .15</text>
+    <text x="370" y="594" class="body ink">③ Conflict guard</text><text x="390" y="614" class="small muted">refuse contradictory strong evidence</text>
+    <text x="370" y="643" class="mono yellow">≥.60 match · .30–.60 review · &lt;.30 hold</text>
+
+    <rect x="725" y="175" width="210" height="220" rx="10" class="redis"/>
+    <text x="745" y="205" class="h ink">Redis 7</text>
+    <text x="745" y="230" class="mono redtext">redis:6379 → 6381</text>
+    <text x="745" y="262" class="mono ink">STREAM events.raw</text><text x="745" y="283" class="small muted">consumer group + pending retry</text>
+    <text x="745" y="311" class="mono ink">STREAM events.resolved</text>
+    <text x="745" y="339" class="mono ink">PUB/SUB events.resolved</text><text x="745" y="360" class="mono ink">PUB/SUB alerts.raised</text>
+    <text x="745" y="384" class="small muted">SET NX dedup TTL: 7 days</text>
+
+    <rect x="970" y="175" width="190" height="260" rx="10" class="pg"/>
+    <text x="990" y="205" class="h ink">PostgreSQL 16</text>
+    <text x="990" y="230" class="mono green">postgres:5432 → 5434</text>
+    <text x="990" y="260" class="mono ink">customers</text><text x="990" y="281" class="mono ink">identifiers</text><text x="990" y="302" class="mono ink">signals</text><text x="990" y="323" class="mono ink">match_audit</text><text x="990" y="344" class="mono ink">alerts</text><text x="990" y="365" class="mono ink">ingest_latency</text>
+    <text x="990" y="397" class="small muted">Identity truth, constraints,</text><text x="990" y="414" class="small muted">auditability and metrics</text>
+
+    <rect x="970" y="480" width="190" height="190" rx="10" class="mongo"/>
+    <text x="990" y="510" class="h ink">MongoDB 7</text>
+    <text x="990" y="535" class="mono green">mongo:27017 → 27018</text>
+    <text x="990" y="568" class="mono ink">timelines</text>
+    <text x="990" y="594" class="body muted">One document/customer</text><text x="990" y="616" class="body muted">Embedded event history</text>
+    <text x="990" y="648" class="small muted">Timeline, funnel, repeat contacts</text>
+
+    <rect x="1230" y="175" width="300" height="205" rx="10" class="api"/>
+    <text x="1250" y="205" class="h ink">Query APIs / read models</text>
+    <text x="1250" y="235" class="mono ink">customer + identity graph</text><text x="1250" y="258" class="mono ink">timeline + funnel</text><text x="1250" y="281" class="mono ink">alerts + unresolved queue</text><text x="1250" y="304" class="mono ink">repeat contacts + metrics</text>
+    <text x="1250" y="339" class="small muted">Joins Postgres identity metadata</text><text x="1250" y="357" class="small muted">with MongoDB journey summaries</text>
+
+    <rect x="1230" y="425" width="300" height="265" rx="10" class="ui"/>
+    <text x="1250" y="455" class="h ink">Next.js 14 frontend</text>
+    <text x="1250" y="480" class="mono yellow">frontend:3000 → host:3000</text>
+    <text x="1250" y="513" class="body ink">Server-rendered dashboard pages</text><text x="1250" y="539" class="body ink">Identity evidence graph</text><text x="1250" y="565" class="body ink">Cross-channel journey timeline</text><text x="1250" y="591" class="body ink">Review queue and alerts</text><text x="1250" y="617" class="body ink">Funnel and repeat-contact views</text>
+    <text x="1250" y="655" class="small muted">SSE adds live resolved events/alerts</text>
+  </g>
+
+  <path class="arrow seed" d="M280 245h70"/><path class="arrow event" d="M280 465h70"/>
+  <path class="arrow event" d="M655 270h70"/><path class="arrow event" d="M725 320H680v220h-25"/>
+  <path class="arrow query" d="M655 505c105 0 175-150 315-150"/><path class="arrow query" d="M655 555c120 0 180 40 315 40"/>
+  <path class="arrow event" d="M655 620c95 0 70-250 70-250"/>
+  <path class="arrow live" d="M935 350c120 0 170 400 435 400v-60"/>
+  <path class="arrow query" d="M1160 295h70"/><path class="arrow query" d="M1160 575c70 0 20-120 70-120"/>
+  <path class="arrow" d="M1380 380v45"/><path class="arrow" d="M1230 555H280"/>
+  <path class="arrow live" d="M350 335C245 335 250 675 280 675"/>
+
+  <g><circle cx="320" cy="465" r="12" class="num"/><text x="316" y="469" class="numt">1</text><circle cx="690" cy="270" r="12" class="num"/><text x="686" y="274" class="numt">2</text><circle cx="690" cy="540" r="12" class="num"/><text x="686" y="544" class="numt">3</text><circle cx="942" cy="355" r="12" class="num"/><text x="938" y="359" class="numt">4</text><circle cx="1195" cy="575" r="12" class="num"/><text x="1191" y="579" class="numt">5</text><circle cx="1380" cy="405" r="12" class="num"/><text x="1376" y="409" class="numt">6</text></g>
+
+  <rect x="350" y="715" width="810" height="70" rx="9" class="label"/>
+  <text x="370" y="740" class="zoneh muted">PROCESSING GUARANTEES</text>
+  <text x="370" y="766" class="small ink">Atomic dedup + enqueue · ACK after successful processing · stale-message reclaim after 15s · max 5 deliveries · DLQ for poison events · idempotent timeline append</text>
+
+  <text x="55" y="850" class="small muted">Docker Compose services: frontend · backend · worker · redis · postgres · mongo | Persistent volumes: pgdata · mongodata · redisdata · frontend_node_modules</text>
+</svg>
