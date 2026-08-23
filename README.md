@@ -57,16 +57,3 @@ Also check:
 - Unresolved review queue → http://localhost:3000/dashboard/unresolved
 - Repeat contacts → http://localhost:3000/dashboard/repeat-contacts
 
-## What to read first
-
-1. `docs/01_DEMO_SCRIPT.md` — minute-by-minute demo (updated for C0001 / 6 views)
-2. `docs/04_PRE_DEMO_CHECKLIST.md` — day-before checklist
-3. `docs/05_ONE_PAGER.md` — print for judges
-4. `docs/02_WINNING_STRATEGY.md` — talking points & jury Q&A
-5. `docs/00_MASTER_PLAN.md` — full architecture / scope
-
-## The 3 things to remember
-
-- **Connected data, not more data.** We sit on top of existing systems.
-- **Real-time and auditable.** Every match has a confidence score; no silent merges.
-- **Actionable, not analytical.** The Churn Risk panel tells the analyst what to do next.
