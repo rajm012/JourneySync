@@ -1,6 +1,7 @@
+
 "use client";
 import { Alert, api } from "@/lib/api";
-import { ASSUMPTIONS, usd } from "@/lib/economics";
+import { ASSUMPTIONS, inr } from "@/lib/economics";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -93,7 +94,7 @@ export function AlertsFeed({
               </div>
               <div className="shrink-0">
                 <div className="eyebrow">At stake</div>
-                <div className="figure t-body font-semibold mt-0.5">{usd(perAlert)}/yr</div>
+                <div className="figure t-body font-semibold mt-0.5">{inr(perAlert)}/yr</div>
               </div>
             </div>
 

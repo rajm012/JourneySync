@@ -64,7 +64,19 @@ async def _startup_seed() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await ensure_indexes()
+    # Docker's embedded DNS can briefly lag while dependent containers join
+    # the network. Retry startup-only Mongo initialization instead of taking
+    # down the API on the first transient resolution failure.
+    for attempt in range(1, 6):
+        try:
+            await ensure_indexes()
+            break
+        except Exception as exc:
+            if attempt == 5:
+                raise
+            delay = attempt * 2
+            print(f"[startup] Mongo index initialization failed (attempt {attempt}/5): {exc!r}; retrying in {delay}s")
+            await asyncio.sleep(delay)
     await ensure_schema()
     await ensure_consumer_group(settings.RAW_STREAM, settings.CONSUMER_GROUP)
     asyncio.create_task(_startup_seed())

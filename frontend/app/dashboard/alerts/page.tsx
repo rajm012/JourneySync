@@ -1,6 +1,6 @@
 import { api, Alert } from "@/lib/api";
 import { AlertsFeed } from "@/app/components/AlertsFeed";
-import { ASSUMPTIONS, churnSaveValue, usd } from "@/lib/economics";
+import { ASSUMPTIONS, churnSaveValue, inr } from "@/lib/economics";
 
 export const dynamic = "force-dynamic";
 
@@ -51,8 +51,8 @@ export default async function RiskPage() {
         />
         <Fig
           label="Retained margin in reach"
-          value={usd(value.perYear)}
-          note={`${Math.round(ASSUMPTIONS.churnSaveRate * 100)}% of signals convert to a save`}
+          value={inr(value.perYear)}
+          note={`${Math.round(ASSUMPTIONS.churnSaveRate * 100)} percentage-point save-rate improvement in the business case`}
         />
       </dl>
 

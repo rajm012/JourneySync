@@ -1,0 +1,237 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"
+     role="img" aria-labelledby="ttl dsc">
+  <title id="ttl">JourneySync architecture</title>
+  <desc id="dsc">Five stages. Channel events are validated and de-duplicated by a FastAPI ingest endpoint, buffered in a Redis stream, resolved to one member by a worker running a deterministic-then-probabilistic ladder with conflict guards, written to PostgreSQL for identity and audit and to MongoDB as one timeline document per member, then pushed to a Next.js dashboard over server-sent events.</desc>
+
+  <defs>
+    <style>
+      text { font-family: "Libre Franklin","Franklin Gothic Medium","Helvetica Neue",Arial,sans-serif; }
+      .m { font-family: "IBM Plex Mono","SF Mono",Menlo,Consolas,monospace; letter-spacing: -0.01em; }
+      .display { font-size: 34px; font-weight: 800; letter-spacing: -0.032em; fill: #0b1b2b; }
+      .sub     { font-size: 15px; fill: #46586b; }
+      .eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; fill: #7c8ca0; }
+      .colhead { font-size: 13px;   font-weight: 700; letter-spacing: 0.13em; fill: #00175a; }
+      .cardttl { font-size: 15px;   font-weight: 700; letter-spacing: -0.018em; fill: #0b1b2b; }
+      .lead    { font-size: 13px;   font-weight: 600; fill: #0b1b2b; }
+      .body    { font-size: 12.5px; fill: #46586b; }
+      .quiet   { font-size: 12.5px; fill: #7c8ca0; }
+      .warm    { fill: #ae2015; }
+      .card    { fill: #ffffff; stroke: #c4c8be; stroke-width: 1; }
+      .hair    { stroke: #e2e3dd; stroke-width: 1; }
+      .hairs   { stroke: #c4c8be; stroke-width: 1; }
+      .flow    { stroke: #006fcf; stroke-width: 2; fill: none; marker-end: url(#tip); }
+      .loop    { stroke: #7c8ca0; stroke-width: 1.25; fill: none; stroke-dasharray: 5 5; marker-end: url(#tipq); }
+    </style>
+    <marker id="tip" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0.5 L7.5 4 L0 7.5 Z" fill="#006fcf"/>
+    </marker>
+    <marker id="tipq" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0.5 L7.5 4 L0 7.5 Z" fill="#7c8ca0"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="900" fill="#fafaf8"/>
+
+  <!-- ══ masthead ══ -->
+  <text x="64" y="52" class="eyebrow">AMERICAN EXPRESS CODESTREET 2026 · TEAM CINEPHILES</text>
+  <text x="64" y="92" class="display">JourneySync — how it works</text>
+  <text x="64" y="122" class="sub">One channel event becomes one member&#8217;s journey in under a second — and every link it makes can be audited.</text>
+  <line x1="64" y1="146" x2="1536" y2="146" class="hairs"/>
+
+  <!-- ══ stage headers ══ -->
+  <text x="64"   y="178" class="colhead">1 · SOURCES</text>
+  <text x="332"  y="178" class="colhead">2 · INGEST</text>
+  <text x="626"  y="178" class="colhead">3 · RESOLVE</text>
+  <text x="1008" y="178" class="colhead">4 · STORE</text>
+  <text x="1288" y="178" class="colhead">5 · ACT</text>
+  <line x1="64" y1="190" x2="1536" y2="190" class="hair"/>
+
+  <!-- ══ flow arrows, in the column gutters ══ -->
+  <path class="flow" d="M304 314 H326"/>
+  <path class="flow" d="M598 314 H620"/>
+  <path class="flow" d="M980 314 H1002"/>
+  <path class="flow" d="M1260 314 H1282"/>
+
+  <!-- ═════════════ 1 · SOURCES  (x 64, w 236) ═════════════ -->
+  <rect x="64" y="214" width="236" height="200" rx="3" class="card"/>
+  <text x="80" y="244" class="cardttl">Four live channels</text>
+  <rect x="80" y="258" width="9" height="9" fill="#00175a"/><text x="98" y="267" class="body">Web</text>
+  <rect x="80" y="280" width="9" height="9" fill="#006fcf"/><text x="98" y="289" class="body">Mobile app</text>
+  <rect x="80" y="302" width="9" height="9" fill="#00a3e0"/><text x="98" y="311" class="body">Call centre</text>
+  <rect x="80" y="324" width="9" height="9" fill="#6bc9e4"/><text x="98" y="333" class="body">Branch</text>
+  <line x1="80" y1="348" x2="284" y2="348" class="hair"/>
+  <text x="80" y="368" class="body">One schema for all four:</text>
+  <text x="80" y="386" class="m body">identity, signals, payload</text>
+  <text x="80" y="404" class="quiet">Add a channel, change nothing.</text>
+
+  <rect x="64" y="442" width="236" height="168" rx="3" class="card"/>
+  <text x="80" y="472" class="cardttl">A fixed dataset</text>
+  <text x="80" y="494" class="m body">customers.json · 1,000</text>
+  <text x="80" y="512" class="m body">events.json · 12,564</text>
+  <text x="80" y="530" class="m body">ground_truth.json</text>
+  <line x1="80" y1="546" x2="284" y2="546" class="hair"/>
+  <text x="80" y="566" class="body">Seeded before every run, so</text>
+  <text x="80" y="584" class="body">precision and recall are</text>
+  <text x="80" y="602" class="body">measured against a known set.</text>
+
+  <rect x="64" y="638" width="236" height="116" rx="3" class="card"/>
+  <text x="80" y="668" class="cardttl">Simulators</text>
+  <text x="80" y="690" class="body">web · app · call centre</text>
+  <text x="80" y="708" class="body">hero playback · 10k burst</text>
+  <text x="80" y="732" class="m quiet">run_demo.py --scenario</text>
+
+  <!-- ═════════════ 2 · INGEST  (x 332, w 262) ═════════════ -->
+  <rect x="332" y="214" width="262" height="200" rx="3" class="card"/>
+  <text x="348" y="244" class="cardttl">Accept fast, decide later</text>
+  <text x="348" y="266" class="m body">POST /api/events · /bulk</text>
+  <line x1="348" y1="282" x2="578" y2="282" class="hair"/>
+  <text x="348" y="302" class="body">Pydantic normalises on the way</text>
+  <text x="348" y="320" class="body">in: email lowercased, phone to</text>
+  <text x="348" y="338" class="body">E.164 — so a later match is a</text>
+  <text x="348" y="356" class="body">literal lookup, not a guess.</text>
+  <line x1="348" y1="372" x2="578" y2="372" class="hair"/>
+  <text x="348" y="392" class="quiet">Nothing touches a database on</text>
+  <text x="348" y="408" class="quiet">the hot path.</text>
+
+  <rect x="332" y="442" width="262" height="168" rx="3" class="card"/>
+  <text x="348" y="472" class="cardttl">Exactly once, by design</text>
+  <text x="348" y="494" class="m body">SET NX + XADD, one Lua call</text>
+  <line x1="348" y1="510" x2="578" y2="510" class="hair"/>
+  <text x="348" y="530" class="body">A retried POST is acknowledged</text>
+  <text x="348" y="548" class="body">but never enters the stream a</text>
+  <text x="348" y="566" class="body">second time — so it is never</text>
+  <text x="348" y="584" class="body">resolved or counted twice.</text>
+  <text x="348" y="604" class="m quiet">dedup window: 7 days</text>
+
+  <rect x="332" y="638" width="262" height="116" rx="3" class="card"/>
+  <text x="348" y="668" class="cardttl">Redis Stream</text>
+  <text x="348" y="690" class="m body">events.raw · group resolvers</text>
+  <text x="348" y="712" class="body">The buffer that absorbs a burst</text>
+  <text x="348" y="732" class="m quiet">received_at_ms stamped here</text>
+
+  <!-- ═════════════ 3 · RESOLVE  (x 626, w 350) ═════════════ -->
+  <rect x="626" y="214" width="350" height="540" rx="3" class="card"/>
+  <text x="646" y="244" class="cardttl">The resolver, rung by rung</text>
+  <text x="646" y="264" class="m quiet">python -m app.workers.resolver_worker</text>
+  <line x1="646" y1="278" x2="956" y2="278" class="hair"/>
+
+  <rect x="646" y="290" width="19" height="19" fill="#00175a"/>
+  <text x="655" y="304" class="m" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">1</text>
+  <text x="676" y="302" class="lead">Deterministic identifier</text>
+  <text x="676" y="320" class="body">user id · email · phone · loyalty card</text>
+
+  <rect x="646" y="342" width="19" height="19" fill="#ae2015"/>
+  <text x="655" y="356" class="m" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">2</text>
+  <text x="676" y="354" class="lead">Identifier conflict guard</text>
+  <text x="676" y="372" class="body">two proven ids disagree → refuse to link</text>
+
+  <rect x="646" y="394" width="19" height="19" fill="#ae2015"/>
+  <text x="655" y="408" class="m" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">3</text>
+  <text x="676" y="406" class="lead">Behavioural conflict guard</text>
+  <text x="676" y="424" class="body">proven id vs strong device evidence, split</text>
+
+  <rect x="646" y="446" width="19" height="19" fill="#00175a"/>
+  <text x="655" y="460" class="m" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">4</text>
+  <text x="676" y="458" class="lead">Probabilistic score (weights)</text>
+  <text x="676" y="476" class="body">device 45 · subnet 20 · time 20 · geo 15</text>
+
+  <rect x="646" y="498" width="19" height="19" fill="#00175a"/>
+  <text x="655" y="512" class="m" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">5</text>
+  <text x="676" y="510" class="lead">Hybrid</text>
+  <text x="676" y="528" class="body">both agree → identifier + 0.4 × behaviour</text>
+
+  <rect x="646" y="550" width="19" height="19" fill="#00175a"/>
+  <text x="655" y="564" class="m" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">6</text>
+  <text x="676" y="562" class="lead">New member</text>
+  <text x="676" y="580" class="body">nobody claimed it — a unique index decides</text>
+
+  <line x1="646" y1="600" x2="956" y2="600" class="hair"/>
+  <text x="646" y="622" class="lead">What the score buys</text>
+  <text x="646" y="642" class="body" fill="#0a6b4f">≥0.60 linked</text>
+  <line x1="732" y1="630" x2="732" y2="646" class="hair"/>
+  <text x="744" y="642" class="body" fill="#855400">0.30–0.60 reviewed</text>
+  <line x1="864" y1="630" x2="864" y2="646" class="hair"/>
+  <text x="876" y="642" class="body" fill="#7c8ca0">&lt;0.30 held</text>
+
+  <rect x="646" y="660" width="310" height="78" rx="3" fill="#fbece9" stroke="#ae2015" stroke-width="1"/>
+  <text x="662" y="682" class="lead warm">Rungs 2 and 3 refuse to answer.</text>
+  <text x="662" y="702" class="body">A refused link goes to a person. Two members</text>
+  <text x="662" y="720" class="body">are never silently merged into one.</text>
+
+  <!-- ═════════════ 4 · STORE  (x 1008, w 248) ═════════════ -->
+  <rect x="1008" y="214" width="248" height="200" rx="3" class="card"/>
+  <text x="1024" y="244" class="cardttl">PostgreSQL 16</text>
+  <text x="1024" y="264" class="quiet">Who they are, and why we think so</text>
+  <line x1="1024" y1="278" x2="1240" y2="278" class="hair"/>
+  <text x="1024" y="298" class="m body">identifiers  unique(type,val)</text>
+  <text x="1024" y="316" class="m body">signals      device · subnet</text>
+  <text x="1024" y="334" class="m body">match_audit  every decision</text>
+  <text x="1024" y="352" class="m body">alerts       1 open per rule</text>
+  <text x="1024" y="370" class="m body">ingest_latency  p50/p95/p99</text>
+  <text x="1024" y="396" class="quiet">The audit table is the product.</text>
+
+  <rect x="1008" y="442" width="248" height="168" rx="3" class="card"/>
+  <text x="1024" y="472" class="cardttl">MongoDB 7</text>
+  <text x="1024" y="492" class="quiet">One document per member</text>
+  <line x1="1024" y1="506" x2="1240" y2="506" class="hair"/>
+  <text x="1024" y="526" class="m body">timelines.events[]</text>
+  <text x="1024" y="544" class="m body">channels_touched</text>
+  <text x="1024" y="566" class="body">A whole cross-channel</text>
+  <text x="1024" y="584" class="body">journey in one read — no</text>
+  <text x="1024" y="602" class="body">join, no fan-out.</text>
+
+  <rect x="1008" y="638" width="248" height="116" rx="3" class="card"/>
+  <text x="1024" y="668" class="cardttl">Redis pub/sub</text>
+  <text x="1024" y="690" class="m body">events.resolved</text>
+  <text x="1024" y="708" class="m body">alerts.raised</text>
+  <text x="1024" y="732" class="quiet">Fan-out without polling</text>
+
+  <!-- ═════════════ 5 · ACT  (x 1288, w 248) ═════════════ -->
+  <rect x="1288" y="214" width="248" height="200" rx="3" class="card"/>
+  <text x="1304" y="244" class="cardttl">Next.js 14 dashboard</text>
+  <text x="1304" y="264" class="quiet">Server-rendered, never cached</text>
+  <line x1="1304" y1="278" x2="1520" y2="278" class="hair"/>
+  <text x="1304" y="298" class="body">Verdict band — answer first</text>
+  <text x="1304" y="316" class="body">Journey spine — four lanes</text>
+  <text x="1304" y="334" class="body">Identity graph — the evidence</text>
+  <text x="1304" y="352" class="body">Review queue — refusals</text>
+  <text x="1304" y="370" class="body">Funnel · repeat contacts</text>
+  <text x="1304" y="396" class="quiet">A dead API looks dead, not zero.</text>
+
+  <rect x="1288" y="442" width="248" height="168" rx="3" class="card"/>
+  <text x="1304" y="472" class="cardttl">Pushed, not polled</text>
+  <text x="1304" y="492" class="m body">GET /api/stream (SSE)</text>
+  <line x1="1304" y1="508" x2="1520" y2="508" class="hair"/>
+  <text x="1304" y="528" class="body">Resolved events and new</text>
+  <text x="1304" y="546" class="body">alerts land in the browser</text>
+  <text x="1304" y="564" class="body">as they happen, so the room</text>
+  <text x="1304" y="582" class="body">watches it work live.</text>
+  <text x="1304" y="602" class="m quiet">15s heartbeat</text>
+
+  <rect x="1288" y="638" width="248" height="116" rx="3" fill="#fbece9" stroke="#ae2015" stroke-width="1"/>
+  <text x="1304" y="668" class="cardttl warm">Alert engine · R1–R4</text>
+  <text x="1304" y="690" class="body">failed logins · payment fails</text>
+  <text x="1304" y="708" class="body">cart drop then call</text>
+  <text x="1304" y="726" class="body">churn words in a transcript</text>
+  <text x="1304" y="744" class="quiet">Each carries the next action.</text>
+
+  <!-- ══ demo-control return path ══ -->
+  <path class="loop" d="M1412 758 V778 H520 V758"/>
+  <text x="960" y="770" class="quiet" text-anchor="middle">Demo controls fire the same public endpoint the channels do · POST /api/demo/*</text>
+
+  <!-- ══ why ══ -->
+  <line x1="64" y1="794" x2="1536" y2="794" class="hairs"/>
+  <text x="64" y="820" class="eyebrow">WHY IT IS BUILT THIS WAY</text>
+
+  <text x="64"   y="848" class="lead">Buffered, not blocking</text>
+  <text x="64"   y="868" class="body">A 10,000-event burst queues; it never drops.</text>
+
+  <text x="432"  y="848" class="lead">It refuses before it guesses</text>
+  <text x="432"  y="868" class="body">The costly failure is a wrong merge, not a miss.</text>
+
+  <text x="800"  y="848" class="lead">Auditable by construction</text>
+  <text x="800"  y="868" class="body">Every decision leaves a row, a score and a reason.</text>
+
+  <text x="1168" y="848" class="lead">Two stores, two jobs</text>
+  <text x="1168" y="868" class="body">Postgres proves identity; Mongo serves the story.</text>
+</svg>

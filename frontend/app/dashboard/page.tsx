@@ -5,6 +5,7 @@ import { LiveStreamTicker } from "../components/LiveStreamTicker";
 import { JourneySpine } from "../components/JourneySpine";
 import { DemoControls } from "../components/DemoControls";
 import { VerdictBand } from "../components/VerdictBand";
+import { OpportunityModel } from "../components/OpportunityModel";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -100,6 +101,10 @@ export default async function Dashboard() {
         <div className="mt-11">
           <h2 className="eyebrow mb-3">Measured, not asserted</h2>
           <MetricsStrip metrics={m} />
+        </div>
+
+        <div className="mt-12 pt-11 border-t" style={{ borderColor: "var(--rule-strong)" }}>
+          <OpportunityModel />
         </div>
 
         <div className="mt-11 grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-10 items-start">

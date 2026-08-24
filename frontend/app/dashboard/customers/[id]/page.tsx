@@ -5,7 +5,7 @@ import { IdentityGraphView } from "@/app/components/IdentityGraphView";
 import { AlertsFeed } from "@/app/components/AlertsFeed";
 import { ChannelIcon } from "@/app/components/ChannelIcon";
 import { CHANNEL_ORDER, channel } from "@/lib/channels";
-import { ASSUMPTIONS, usd } from "@/lib/economics";
+import { ASSUMPTIONS, inr } from "@/lib/economics";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -107,9 +107,9 @@ export default async function CustomerJourney({ params }: { params: { id: string
             </span>{" "}
             here — roughly{" "}
             <span className="figure font-semibold" style={{ color: "var(--ink)" }}>
-              {usd(savedMinutes * ASSUMPTIONS.agentCostPerMinute)}
+              {inr(savedMinutes * ASSUMPTIONS.servicingCostPerMinute)}
             </span>{" "}
-            on this one member.
+            of servicing cost on this one member.
           </p>
         )}
       </header>

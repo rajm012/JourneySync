@@ -1,10 +1,5 @@
 import { Metrics } from "@/lib/api";
-import {
-  ASSUMPTION_NOTES,
-  churnSaveValue,
-  repeatContactValue,
-  usd,
-} from "@/lib/economics";
+import {LIVE_FIGURE_NOTES, churnSaveValue, repeatContactValue, inr} from "@/lib/economics";
 
 /* ==========================================================================
    The verdict band
@@ -28,7 +23,7 @@ export function VerdictBand({
   live: boolean;
 }) {
   const { totals, latency } = metrics;
-  const servicing = repeatContactValue(repeatCustomers);
+  const servicing = repeatContactValue(repeatCustomers, repeatWindowDays);
   const churn = churnSaveValue(totals.open_alerts);
 
   return (
@@ -68,13 +63,13 @@ export function VerdictBand({
           style={{ animationDelay: "210ms" }}
         >
           <Figure
-            value={usd(servicing.perYear)}
+            value={inr(servicing.perYear)}
             unit="/year"
             label="Avoidable servicing cost"
             note={`${repeatCustomers.toLocaleString()} members told the same story twice in ${repeatWindowDays} days`}
           />
           <Figure
-            value={usd(churn.perYear)}
+            value={inr(churn.perYear)}
             unit="/year"
             label="Retained margin in reach"
             note={`${totals.open_alerts.toLocaleString()} churn signals open right now`}
@@ -101,11 +96,12 @@ export function VerdictBand({
           </summary>
           <div className="mt-3 pt-3 border-t" style={{ borderColor: "rgba(255,255,255,0.18)" }}>
             <p className="t-label mb-3" style={{ color: "var(--ink-band-2)" }}>
-              Planning assumptions, not measurements. Swap them for AmEx servicing figures and every
-              number above recalculates.
+              The counts above are measured. These two prices are planning assumptions —
+              swap them for AmEx servicing figures and both figures recalculate. The full
+              portfolio model, with all six inputs, is further down this page.
             </p>
             <dl className="grid sm:grid-cols-2 gap-x-10 gap-y-1.5">
-              {ASSUMPTION_NOTES.map((a) => (
+              {LIVE_FIGURE_NOTES.map((a) => (
                 <div
                   key={a.label}
                   className="flex items-baseline justify-between gap-4 py-1 border-b"

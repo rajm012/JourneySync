@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { ASSUMPTIONS, repeatContactValue, usd } from "@/lib/economics";
+import { ASSUMPTIONS, repeatContactValue, inr } from "@/lib/economics";
 import { channel } from "@/lib/channels";
 import { ChannelIcon } from "@/app/components/ChannelIcon";
 import Link from "next/link";
@@ -33,7 +33,7 @@ export default async function RepeatContactsPage({
   const count = data?.count ?? 0;
 
   const totalContacts = items.reduce((s, c) => s + c.total, 0);
-  const value = repeatContactValue(count);
+  const value = repeatContactValue(count, days);
 
   return (
     <div className="shell pt-8">
@@ -73,8 +73,8 @@ export default async function RepeatContactsPage({
         <Fig label="Contacts in window" value={totalContacts.toLocaleString()} />
         <Fig
           label="Servicing cost, annualised"
-          value={usd(value.perYear)}
-          note={`at $${ASSUMPTIONS.costPerAssistedContact.toFixed(2)} per assisted contact`}
+          value={inr(value.perYear)}
+          note={`${count.toLocaleString()} members in ${days} days, at ₹${ASSUMPTIONS.costPerAssistedContact.toLocaleString("en-IN")} per assisted contact fully allocated`}
         />
         <Fig
           label="Worst case"
@@ -127,7 +127,7 @@ export default async function RepeatContactsPage({
                 <td className="figure t-label text-muted whitespace-nowrap">
                   {c.last_contact_at ? c.last_contact_at.slice(0, 16).replace("T", " ") : "—"}
                 </td>
-                <td className="num">{usd(c.total * ASSUMPTIONS.costPerAssistedContact)}</td>
+                <td className="num">{inr(c.total * ASSUMPTIONS.costPerAssistedContact)}</td>
                 <td className="text-right whitespace-nowrap">
                   <Link href={`/dashboard/customers/${c.customer_id}`} className="text-link t-label">
                     Open journey →

@@ -75,7 +75,11 @@ async def get_metrics():
     async with SessionLocal() as s:
         m = MetricsService(s)
         totals = await m.totals()
-        latency = await m.latency(since_minutes=15)
+        # 24 hours, not 15 minutes. The dashboard band says "rolling 24 hours",
+        # and ingest_latency is durable — a 15-minute window meant the headline
+        # latency figure went blank the moment the room stopped generating
+        # events, which is exactly when a judge or director is reading it.
+        latency = await m.latency(since_minutes=1440)
         accuracy = await m.load_accuracy()
         if accuracy is None:
             # Compute live from match_audit + seeded catalog
