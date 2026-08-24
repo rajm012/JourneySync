@@ -74,7 +74,7 @@ export default async function RepeatContactsPage({
         <Fig
           label="Servicing cost, annualised"
           value={inr(value.perYear)}
-          note={`${count.toLocaleString()} members in ${days} days, at ₹${ASSUMPTIONS.costPerAssistedContact.toLocaleString("en-IN")} per assisted contact fully allocated`}
+          note={`${count.toLocaleString()} members in ${days} days, at ${inr(ASSUMPTIONS.costPerAssistedContact)} per assisted contact fully allocated`}
         />
         <Fig
           label="Worst case"

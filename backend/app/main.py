@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import time
 from contextlib import asynccontextmanager
-from app.api import analytics, customers, demo, events
+from app.api import analytics, customers, demo, economics, events
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -101,6 +101,7 @@ app.add_middleware(
 app.include_router(events.router)
 app.include_router(customers.router)
 app.include_router(analytics.router)
+app.include_router(economics.router)
 app.include_router(sse.router)
 app.include_router(demo.router)
 
