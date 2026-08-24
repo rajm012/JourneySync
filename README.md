@@ -99,7 +99,7 @@ the figure does not go blank when the room stops generating traffic.
 ## Repo layout
 
 ```
-Others/
+JourneySync/
 ├── docker-compose.yml       # postgres · mongo · redis · backend · worker · frontend
 ├── data/
 │   ├── customers.json       # 1,000-member synthetic catalog
@@ -115,10 +115,13 @@ Others/
 │   ├── app/dashboard/       # overview, members, journeys, risk, review, repeat
 │   ├── app/components/      # journey spine, identity graph, funnel, ticker
 │   └── lib/economics.ts     # the business case, every figure derived
-└── docs/
-    ├── ARCHITECTURE.md      # how it works and why it works that way
-    ├── architecture.svg     # 16:9 diagram for the deck
-    └── TALKING-THE-NUMBERS.md
+└── PS_Docs/
+    ├── arch-doc.md          # how it works and why it works that way
+    ├── arch-3.svg           # 16:9 architecture diagram for the deck
+    ├── numbers.md           # the business case, and how to present it
+    ├── PS.png               # the problem statement
+    ├── PPT.pdf              # the deck
+    └── Report.pdf           # the written submission
 ```
 
 ## Why the design looks like this

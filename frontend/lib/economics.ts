@@ -254,5 +254,5 @@ export function inrRange(low: number, high: number): string {
   if (unit && unit === unitOf(hi)) {
     return `₹${lo.slice(1, lo.length - unit.length)}–${hi.slice(1)}`;
   }
-  return `${lo}-${hi.slice(1)}`;
+  return `${lo}–${hi.slice(1)}`;
 }

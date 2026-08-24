@@ -36,6 +36,7 @@ pnpm-debug.log*
 .npm/
 .yarn/cache/
 .yarn/unplugged/
+frontend/.next/
 
 # Runtime files
 *.log

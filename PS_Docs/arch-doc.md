@@ -3,7 +3,7 @@
 > Real-time cross-channel identity resolution and journey stitching.
 > American Express CodeStreet 2026 · Team Cinephiles.
 
-Diagram for slides: [`docs/architecture.svg`](architecture.svg) (1600×900, 16:9).
+Diagram for slides: [`arch-3.svg`](arch-3.svg) (1600×900, 16:9).
 
 ---
 
