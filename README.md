@@ -36,3 +36,8 @@ Host-published DB ports are shifted to avoid clashing with local services: Postg
 5. **/dashboard/unresolved** — the review queue. This is the control, not a backlog: it is how you can tell a confident link from an assumed one.
 6. **/dashboard/funnel** — the deepest drop-off, counted in distinct resolved members rather than in clicks.
 7. **Load test · 10,000 events** — 10k events over 30 seconds, and the latency percentiles on the Overview move while you watch.
+
+## Authors
+- Vyom Thacker (vyomthacker9969@gmail.com) (@vyomthacker)
+- Raj Maurya (rajmahimaurya@gmail.com) (@rajm012)
+
